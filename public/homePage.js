@@ -11,23 +11,26 @@ function checkLogout(response) {
 // Получение информации о пользователе
 ApiConnector.current(response => checkCurrent(response));
 function checkCurrent(response) {
-    if (response.success == false) console.error(response.error);
+    if (!response.success) console.error(response.error);
     else ProfileWidget.showProfile(response.data);
 }
 
 
 // Получение текущих курсов валют
 const ratesBoard = new RatesBoard();
+getCurrentCurrency();
+setInterval(getCurrentCurrency, 60000);
+
 function getCurrentCurrency() {
     ApiConnector.getStocks(response => {
-        if (response.success == true) {
+        if (response.success) { 
             ratesBoard.clearTable();
             ratesBoard.fillTable(response.data);
         }
         else console.error(response.error);
     })
 }
-setInterval(getCurrentCurrency, 60000);
+
 
 // Операции с деньгами
 // 1: Пополнение баланса
@@ -45,7 +48,7 @@ moneyManager.sendMoneyCallback = function(data) {
 }
 
 function dataUpdate(response, message) {
-    if (response.success == true) {
+    if (response.success) {
         ProfileWidget.showProfile(response.data);
         moneyManager.setMessage(response.success, message);
     }
@@ -68,7 +71,7 @@ favoritesWidget.removeUserCallback = function(data) {
 }
 
 function dataUpdateFavorites(response) {
-    if (response.success == true) {
+    if (response.success) {
         favoritesWidget.clearTable();
         favoritesWidget.fillTable(response.data);
         moneyManager.updateUsersList(response.data);
